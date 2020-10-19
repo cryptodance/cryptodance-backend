@@ -1,0 +1,11 @@
+import { Module, HttpModule } from '@nestjs/common';
+import { OrderbooksController } from './orderbooks.controller';
+import { OrderbooksService } from './orderbooks.service';
+import { RedisCacheModule } from '../redis-cache/redis-cache.module';
+
+@Module({
+  imports: [HttpModule, RedisCacheModule],
+  controllers: [OrderbooksController],
+  providers: [OrderbooksService],
+})
+export class OrderbooksModule {}

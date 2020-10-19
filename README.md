@@ -1,6 +1,6 @@
 # CryptoDance.XYZ Backend
 
-![Architecture](https://raw.githubusercontent.com/cryptodance/cryptodance-backend/master/architecture.png)
+![Architecture](https://raw.githubusercontent.com/cryptodance/cryptodance-backend/master/architecture.jpg)
 
 ## Tech Stack
 

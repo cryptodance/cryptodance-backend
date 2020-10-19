@@ -1,0 +1,116 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-master
+  labels:
+    app: redis
+spec:
+  selector:
+    matchLabels:
+      app: redis
+      role: master
+      tier: backend
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: redis
+        role: master
+        tier: backend
+    spec:
+      containers:
+      - name: master
+        image: k8s.gcr.io/redis:e2e
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        ports:
+        - containerPort: 6379
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-master
+  labels:
+    app: redis
+    role: master
+    tier: backend
+spec:
+  ports:
+  - name: redis
+    port: 6379
+    targetPort: 6379
+  selector:
+    app: redis
+    role: master
+    tier: backend
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cryptodance-backend
+  labels:
+    app: cryptodance-backend
+    tier: backend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: cryptodance-backend
+      tier: backend
+  template:
+    metadata:
+      labels:
+        app: cryptodance-backend
+        tier: backend
+    spec:
+      containers:
+      - name: cryptodance-backend
+        image: cryptodance/backend:latest
+        env:
+        - name: REDIS_HOST
+          value: "redis-master"
+        - name: REDIS_PORT
+          value: "6379"
+        - name: REDIS_TTL
+          value: "7890000"
+        ports:
+        - containerPort: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cryptodance-backend
+  labels:
+    app: cryptodance-backend
+    tier: backend
+spec:
+  ports:
+  - protocol: TCP
+    port: 3030
+    targetPort: 3000
+  selector:
+    app: cryptodance-backend
+    tier: backend
+  type: NodePort
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: cryptodance-backend
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: "cryptodance-backend-ip"
+    networking.gke.io/managed-certificates: cryptodance-ingress-certificate
+spec:
+  backend:
+    serviceName: cryptodance-backend
+    servicePort: 3030
+---
+apiVersion: networking.gke.io/v1beta1
+kind: ManagedCertificate
+metadata:
+  name: cryptodance-ingress-certificate
+spec:
+  domains:
+    - cloud.cryptodance.xyz

@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  backend:
+    build: .
+    ports:
+        - "6060:3000"
+    env_file:
+      - .env
+    links:
+      - redis
+
+  redis:
+    image: redis
+    container_name: cache
+    expose:
+      - 6379

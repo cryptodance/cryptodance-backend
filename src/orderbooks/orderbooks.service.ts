@@ -121,8 +121,8 @@ export class OrderbooksService {
     return newOrders.reduce((orders, order, index) => {
       let aggtotal =
         index > 0 ? orders[index - 1].aggtotal + order.total : order.total;
-      aggtotal = parseFloat(aggtotal).toFixed(8);
       orders.push({ ...order, aggtotal });
+      console.log(aggtotal);
       return orders;
     }, []);
   }

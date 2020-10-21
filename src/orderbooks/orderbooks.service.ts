@@ -122,7 +122,6 @@ export class OrderbooksService {
       let aggtotal =
         index > 0 ? orders[index - 1].aggtotal + order.total : order.total;
       orders.push({ ...order, aggtotal });
-      console.log(aggtotal);
       return orders;
     }, []);
   }

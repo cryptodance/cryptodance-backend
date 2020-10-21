@@ -77,12 +77,12 @@ export class OrderbooksService {
         'poloniex',
       );
 
-      let combinedBids = this.combineOrderBooks(bittrexBids, poloniexBids);
-      let combinedAsks = this.combineOrderBooks(
-        bittrexAsks,
-        poloniexAsks,
-        'ascending',
-      );
+      // TODO: Need to fix sorting
+      // let combinedBids = this.combineOrderBooks(bittrexBids, poloniexBids);
+      // let combinedAsks = this.combineOrderBooks(bittrexAsks, poloniexAsks);
+
+      let combinedBids = [...bittrexBids, ...poloniexBids];
+      let combinedAsks = [...bittrexAsks, ...poloniexAsks];
 
       await this.redisCacheService.set('btc_eth', {
         bids: combinedBids,
@@ -127,18 +127,19 @@ export class OrderbooksService {
     }, []);
   }
 
-  combineOrderBooks(
-    a: Array<CryptoDanceOrderInterface>,
-    b: Array<CryptoDanceOrderInterface>,
-    sortType: string = 'descending',
-  ): Array<CryptoDanceOrderInterface> {
-    let combinedOrderBook = new Map();
-    a.forEach(order => {
-      combinedOrderBook.set(order.rate, order);
-    });
-    b.forEach(order => {
-      combinedOrderBook.set(order.rate, order);
-    });
-    return [...combinedOrderBook.values()];
-  }
+  // TODO: Need to fix sorting
+  // combineOrderBooks(
+  //   a: Array<CryptoDanceOrderInterface>,
+  //   b: Array<CryptoDanceOrderInterface>,
+  //   sortType: string = 'descending',
+  // ): Array<CryptoDanceOrderInterface> {
+  //   let combinedOrderBook = new Map();
+  //   a.forEach(order => {
+  //     combinedOrderBook.set(order.rate, order);
+  //   });
+  //   b.forEach(order => {
+  //     combinedOrderBook.set(order.rate, order);
+  //   });
+  //   return [...combinedOrderBook.values()];
+  // }
 }

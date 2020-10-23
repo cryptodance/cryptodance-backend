@@ -2,14 +2,15 @@ import { Injectable, NotFoundException, HttpService } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { map } from 'rxjs/operators';
 
-import { RedisCacheService } from '../redis-cache/redis-cache.service';
+// import { RedisCacheService } from '../redis-cache/redis-cache.service';
+import { InmemoryCacheService } from '../inmemory-cache/inmemory-cache.service';
 import { CryptoDanceOrderInterface } from './interfaces/cryptoDanceOrder.interface';
 import { CryptoDanceOrderbookInterface } from './interfaces/cryptoDanceOrderBook.interface';
 
 @Injectable()
 export class OrderbooksService {
   constructor(
-    private readonly redisCacheService: RedisCacheService,
+    private readonly inmemoryCacheService: InmemoryCacheService,
     private httpService: HttpService,
   ) {}
 
@@ -19,7 +20,7 @@ export class OrderbooksService {
     let found;
     try {
       if (currencyPair == 'btc_eth') {
-        found = await this.redisCacheService.get(currencyPair);
+        found = await this.inmemoryCacheService.get(currencyPair);
       } else {
         found = null;
       }
@@ -84,7 +85,7 @@ export class OrderbooksService {
       let combinedBids = [...bittrexBids, ...poloniexBids];
       let combinedAsks = [...bittrexAsks, ...poloniexAsks];
 
-      await this.redisCacheService.set('btc_eth', {
+      await this.inmemoryCacheService.set('btc_eth', {
         bids: combinedBids,
         asks: combinedAsks,
       });

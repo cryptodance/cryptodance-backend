@@ -1,13 +1,13 @@
 import { Injectable, HttpService, NotFoundException } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { map } from 'rxjs/operators';
-// import { RedisCacheService } from '../redis-cache/redis-cache.service';
-import { InmemoryCacheService } from '../inmemory-cache/inmemory-cache.service';
+import { RedisCacheService } from '../redis-cache/redis-cache.service';
+// import { InmemoryCacheService } from '../inmemory-cache/inmemory-cache.service';
 
 @Injectable()
 export class MarketSummaryService {
   constructor(
-    private readonly inmemoryCacheService: InmemoryCacheService,
+    private readonly redisCacheService: RedisCacheService,
     private httpService: HttpService,
   ) {}
 
@@ -15,7 +15,7 @@ export class MarketSummaryService {
     let found;
     try {
       if (currencyPair == 'btc_eth') {
-        found = await this.inmemoryCacheService.get(
+        found = await this.redisCacheService.get(
           currencyPair.toLowerCase() + '_summary',
         );
       } else {
@@ -74,7 +74,7 @@ export class MarketSummaryService {
         ).toFixed(2),
       };
 
-      await this.inmemoryCacheService.set('btc_eth_summary', [
+      await this.redisCacheService.set('btc_eth_summary', [
         bittrexMarketSummaryBTCETH,
         poloniexMarketSummaryBTCETH,
       ]);
